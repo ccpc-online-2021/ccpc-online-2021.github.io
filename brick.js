@@ -1,7 +1,7 @@
 let c = document.getElementById("cvs"), ctx = c.getContext("2d");
 
-let state = 0, hover = 0, n, m, brk, tot, mx = 300, my = 0, deagle = new Image(), score = 0, bullet = 0, lookat = 0, shot = 0;
-deagle.src = 'deagle.png', thrown = false;
+let state = 0, hover = 0, n, m, brk, tot, mx = 300, my = 0, deagle = new Image(), score = 0, bullet = 0, lookat = 0, shot = 0, thrown = false, buy = false, qrcode = new Image();
+deagle.src = 'deagle.png', qrcode.src = 'qrcode.png';
 const PAD = 100, BOT = 400;
 
 function frame() {
@@ -68,6 +68,10 @@ function frame() {
       }
     }
     ctx.restore();
+
+    if (buy) {
+      ctx.drawImage(qrcode, 300, 100, 1000, 1000);
+    }
 
   } else if (state == 2) {
     ctx.font = "200px Arial";
@@ -169,5 +173,8 @@ document.addEventListener("keydown", (e) => {
   }
   if (e.key == 'E' || e.key == 'e') {
     thrown = false;
+  }
+  if (e.key == 'B' || e.key == 'b') {
+    buy = !buy;
   }
 });
