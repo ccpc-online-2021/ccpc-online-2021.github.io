@@ -1,7 +1,7 @@
 let c = document.getElementById("cvs"), ctx = c.getContext("2d");
 
 let state = 0, hover = 0, n, m, brk, tot, mx = 300, my = 0, deagle = new Image(), score = 0, bullet = 0, lookat = 0, shot = 0;
-deagle.src = 'deagle.png';
+deagle.src = 'deagle.png', thrown = false;
 const PAD = 100, BOT = 400;
 
 function frame() {
@@ -43,23 +43,29 @@ function frame() {
     ctx.fillText(`score: ${score} bullets: ${bullet}`, 100, 70);
     ctx.save();
 
-    let p = ((new Date()).getTime() - shot) / 500;
-    if (p < 1) {
-      const X = 0, Y = 100;
-      ctx.translate(mx - 60 + X, 1100 - 703 / 3 + 100 + Y);
-      ctx.rotate(p < 0.1 ? p / 0.1 * Math.PI / 4 : (1 - Math.pow((p - 0.1) / 0.9, 2)) * Math.PI / 4);
-      ctx.drawImage(deagle, -167 / 3 - X, -350 / 3 - Y, 372 / 3, 703 / 3);
-    } else {
+    if (thrown) {
       ctx.translate(mx - 60, 1100 - 703 / 3 + 100);
-      if (lookat) {
-        let p = ((new Date()).getTime() - lookat) / 2000;
-        ctx.rotate(Math.PI * 2 * p * 5);
-        if (p > 1) {
-          lookat = 0;
-        }
-      }
+      ctx.rotate(Math.PI / 2);
       ctx.drawImage(deagle, -167 / 3, -350 / 3, 372 / 3, 703 / 3);
-      console.log(mx, 'drawImage');
+    } else {
+      let p = ((new Date()).getTime() - shot) / 500;
+      if (p < 1) {
+        const X = 0, Y = 100;
+        ctx.translate(mx - 60 + X, 1100 - 703 / 3 + 100 + Y);
+        ctx.rotate(p < 0.1 ? p / 0.1 * Math.PI / 4 : (1 - Math.pow((p - 0.1) / 0.9, 2)) * Math.PI / 4);
+        ctx.drawImage(deagle, -167 / 3 - X, -350 / 3 - Y, 372 / 3, 703 / 3);
+      } else {
+        ctx.translate(mx - 60, 1100 - 703 / 3 + 100);
+        if (lookat) {
+          let p = ((new Date()).getTime() - lookat) / 2000;
+          ctx.rotate(Math.PI * 2 * p * 5);
+          if (p > 1) {
+            lookat = 0;
+          }
+        }
+        ctx.drawImage(deagle, -167 / 3, -350 / 3, 372 / 3, 703 / 3);
+        console.log(mx, 'drawImage');
+      }
     }
     ctx.restore();
 
@@ -95,6 +101,8 @@ c.addEventListener("click", () => {
       brk.push(ln);
     }
   } else if (state == 1) {
+    if (thrown)
+      return;
     if (bullet > 0 && (new Date()).getTime() - shot > 200) {
       snd.pause();
       snd.currentTime = 0;
@@ -129,6 +137,8 @@ c.addEventListener("click", () => {
 });
 
 c.addEventListener("mousemove", (e) => {
+  if (thrown)
+    return;
   let rect = c.getBoundingClientRect();
   mx = (e.clientX - rect.left) * 2;
   my = (e.clientY - rect.top) * 2;
@@ -153,5 +163,11 @@ document.addEventListener("keydown", (e) => {
   console.log(e);
   if (e.key == 'F' || e.key == 'f') {
     lookat = (new Date()).getTime();
+  }
+  if (e.key == 'G' || e.key == 'g') {
+    thrown = true;
+  }
+  if (e.key == 'E' || e.key == 'e') {
+    thrown = false;
   }
 });
